@@ -1,5 +1,5 @@
 <template>
-  <el-menu class="el-menu-vertical" default-active="2" :collapse="isCollapse">
+  <el-menu class="el-menu-vertical" default-active="1" :collapse="isCollapse">
     <el-menu-item index="1">
       <el-icon>
         <el-icon-menu />
@@ -16,9 +16,15 @@
       <el-icon>
         <el-icon-menu />
       </el-icon>
-      <span>趋势标记</span>
+      <span>省市区选择</span>
     </el-menu-item>
     <el-menu-item index="4">
+      <el-icon>
+        <el-icon-menu />
+      </el-icon>
+      <span>趋势标记</span>
+    </el-menu-item>
+    <el-menu-item index="5">
       <el-icon>
         <el-icon-menu />
       </el-icon>

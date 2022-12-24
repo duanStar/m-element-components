@@ -9,10 +9,10 @@
 
 <script lang="ts" setup>
 // @ts-ignore
-let props = defineProps<{
+const props = defineProps<{
   isCollapse: boolean;
 }>();
-let emits = defineEmits(["update:is-collapse"]);
+const emits = defineEmits(["update:is-collapse"]);
 
 let toggle = () => {
   emits("update:is-collapse", !props.isCollapse);
