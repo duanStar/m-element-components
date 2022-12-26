@@ -30,6 +30,12 @@
       </el-icon>
       <span>时间选择器</span>
     </el-menu-item>
+    <el-menu-item index="6">
+      <el-icon>
+        <el-icon-menu />
+      </el-icon>
+      <span>通知菜单</span>
+    </el-menu-item>
   </el-menu>
 </template>
 
