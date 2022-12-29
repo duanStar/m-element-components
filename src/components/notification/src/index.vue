@@ -41,4 +41,9 @@ const { icon, value, max, isDot } = defineProps({
 const slots = useSlots();
 </script>
 
-<style scoped></style>
+<style scoped>
+svg {
+  width: 1em;
+  height: 1em;
+}
+</style>
