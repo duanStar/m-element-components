@@ -8,12 +8,7 @@
     <template #reference>
       <div class="reference">
         <div>{{ result }}</div>
-        <el-icon-arrow-down
-          :style="{
-            transform: visible ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'all 0.3s',
-          }"
-        ></el-icon-arrow-down>
+        <el-icon-arrow-down :class="{ rotate: visible }"></el-icon-arrow-down>
       </div>
     </template>
     <div class="container">
@@ -49,8 +44,13 @@ const selectValue = ref<string>("");
   width: fit-content;
   cursor: pointer;
 }
+.rotate {
+  transform: rotate(180deg);
+}
 svg {
   width: 1em;
   height: 1em;
+  transition: all 0.3s;
+  margin-left: 4px;
 }
 </style>
