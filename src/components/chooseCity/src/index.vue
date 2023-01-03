@@ -20,8 +20,20 @@
           </el-radio-group>
         </el-col>
         <el-col :span="12" :offset="2">
-          <el-select v-model="selectValue" filterable placeholder="请选择">
-            <el-option label="1" value="1" />
+          <el-select
+            v-model="selectValue"
+            filterable
+            placeholder="请搜索城市"
+            clearable
+            :filter-method="filterMethod"
+            @change="changeSelect"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
           </el-select>
         </el-col>
       </el-row>
@@ -54,27 +66,73 @@
           </template>
         </el-scrollbar>
       </template>
+      <template v-else>
+        <div class="province">
+          <div
+            class="province-item"
+            v-for="(value, key) in provinces"
+            :key="key"
+            @click="clickCharacter(key)"
+          >
+            {{ key }}
+          </div>
+        </div>
+        <el-scrollbar max-height="300px">
+          <template
+            v-for="(item, index) in Object.values(provinces)"
+            :key="index"
+          >
+            <template v-for="(item1, index1) in item" :key="index1">
+              <el-row style="margin-bottom: 10px" :id="item1.id">
+                <el-col :span="3">{{ item1.name }}:</el-col>
+                <el-col :span="21" class="province-name">
+                  <div
+                    class="province-name-item"
+                    v-for="name in item1.data"
+                    :key="name"
+                    @click="clickProvince(name)"
+                  >
+                    {{ name }}
+                  </div>
+                </el-col>
+              </el-row>
+            </template>
+          </template>
+        </el-scrollbar>
+      </template>
     </div>
   </el-popover>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import city from "../lib/city";
-import { City } from "./types";
+import province from "../lib/province.json";
+import { City, Province } from "./types";
 
-const chooseCityEmits = defineEmits(["change"]);
+const chooseCityEmits = defineEmits(["changeCity", "changeProvince"]);
 
 const result = ref<string>("请选择");
 const visible = ref<boolean>(false);
 const radioValue = ref<string>("按城市");
 const selectValue = ref<string>("");
 const cities = ref(city.cities);
+const provinces = ref(province);
+const defaultOptions = computed(() => {
+  return Object.values(cities.value).flat(2);
+});
+const options = ref<City[]>([]);
 
 const clickItem = (item: City) => {
   result.value = item.name;
   visible.value = false;
-  chooseCityEmits("change", item);
+  chooseCityEmits("changeCity", item);
+};
+
+const clickProvince = (item: string) => {
+  result.value = item;
+  visible.value = false;
+  chooseCityEmits("changeProvince", item);
 };
 
 const clickCharacter = (key: string) => {
@@ -83,6 +141,33 @@ const clickCharacter = (key: string) => {
     behavior: "smooth",
   });
 };
+
+const filterMethod = (value: string) => {
+  if (!value) {
+    options.value = defaultOptions.value;
+  } else {
+    options.value = defaultOptions.value.filter((item) => {
+      return item.name.includes(value) || item.spell.includes(value);
+    });
+  }
+};
+
+const changeSelect = (id: number) => {
+  const item = options.value.find((item) => item.id === id);
+  if (item) {
+    result.value = item.name;
+    visible.value = false;
+    if (radioValue.value === "按城市") {
+      chooseCityEmits("changeCity", item);
+    } else {
+      chooseCityEmits("changeProvince", item.name);
+    }
+  }
+};
+
+onMounted(() => {
+  options.value = defaultOptions.value;
+});
 </script>
 
 <style scoped lang="scss">
@@ -102,7 +187,8 @@ svg {
   margin-left: 4px;
 }
 
-.city {
+.city,
+.province {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -113,10 +199,12 @@ svg {
     margin-right: 8px;
     margin-bottom: 8px;
     border: 1px solid #eee;
+    cursor: pointer;
   }
 }
 
-.city-name {
+.city-name,
+.province-name {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
