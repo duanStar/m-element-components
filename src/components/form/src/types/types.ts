@@ -1,3 +1,4 @@
+import { CSSProperties } from "vue";
 import { RuleItem } from "./rule";
 
 export interface FormOptions {
@@ -31,6 +32,8 @@ export interface FormOptions {
     clearable?: boolean;
     showPassword?: boolean;
     disabled?: boolean;
+    style?: CSSProperties;
   };
   placeholder?: string;
+  children?: Omit<FormOptions, "prop">[];
 }
