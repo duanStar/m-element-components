@@ -1,3 +1,4 @@
+import { IEditorConfig, IToolbarConfig } from "@wangeditor/editor";
 import { UploadRequestOptions } from "element-plus";
 import { CSSProperties } from "vue";
 import { RuleItem } from "./rule";
@@ -23,7 +24,8 @@ export interface FormOptions {
     | "time-picker"
     | "time-select"
     | "transfer"
-    | "upload";
+    | "upload"
+    | "editor";
   value?: any;
   label?: string;
   prop: string;
@@ -57,5 +59,9 @@ export interface FormOptions {
     httpRequest?: (
       options: UploadRequestOptions
     ) => XMLHttpRequest | Promise<unknown>;
+  };
+  editorAttrs?: {
+    toolbarConfig?: Partial<IToolbarConfig>;
+    editorConfig?: Partial<IEditorConfig>;
   };
 }

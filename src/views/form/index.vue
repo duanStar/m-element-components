@@ -29,11 +29,13 @@
 
 <script setup lang="ts">
 import { FormOptions } from "@/components/form/src/types/types";
+import { IDomEditor } from "@wangeditor/core";
 import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
 
 interface Scope {
   form: FormInstance;
   model: any;
+  editor: IDomEditor;
 }
 
 let options: FormOptions[] = [
@@ -179,6 +181,25 @@ let options: FormOptions[] = [
       action: "http://jsonplaceholder.typicode.com/posts",
       limit: 3,
       multiple: true,
+    },
+  },
+  {
+    type: "editor",
+    value: "描述",
+    prop: "desc",
+    label: "描述",
+    rules: [
+      {
+        required: true,
+        message: "描述不能为空",
+        trigger: "blur",
+      },
+    ],
+    editorAttrs: {
+      toolbarConfig: {},
+      editorConfig: {
+        placeholder: "请输入描述",
+      },
     },
   },
 ];
