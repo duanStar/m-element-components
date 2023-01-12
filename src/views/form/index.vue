@@ -1,9 +1,40 @@
 <template>
-  <m-form :options="options" label-width="100px"></m-form>
+  <m-form
+    :options="options"
+    label-width="100px"
+    @on-preview="handlePreview"
+    @on-remove="handleRemove"
+    @before-remove="beforeRemove"
+    @on-exceed="handleExceed"
+    @on-success="handleSuccess"
+    @on-error="handleError"
+    @on-change="handleChange"
+  >
+    <template #uploadArea>
+      <div>
+        <el-button type="primary" size="small">点击上传</el-button>
+      </div>
+    </template>
+    <template #uploadTip>
+      <div style="color: #ccc; font-size: 12px">
+        jpg/png 文件，大小不超过 500kb
+      </div>
+    </template>
+    <template #action="scope">
+      <el-button type="primary" @click="onSubmit(scope)">提交</el-button>
+      <el-button @click="resetForm(scope)">重置</el-button>
+    </template>
+  </m-form>
 </template>
 
 <script setup lang="ts">
 import { FormOptions } from "@/components/form/src/types/types";
+import { ElMessage, ElMessageBox, FormInstance } from "element-plus";
+
+interface Scope {
+  form: FormInstance;
+  model: any;
+}
 
 let options: FormOptions[] = [
   {
@@ -117,14 +148,14 @@ let options: FormOptions[] = [
   },
   {
     type: "radio-group",
-    value: "1",
+    value: "男",
     prop: "gender",
     label: "性别",
     rules: [
       {
         required: true,
         message: "性别不能为空",
-        trigger: "change",
+        trigger: "blur",
       },
     ],
     children: [
@@ -140,7 +171,69 @@ let options: FormOptions[] = [
       },
     ],
   },
+  {
+    type: "upload",
+    label: "头像",
+    prop: "photo",
+    uploadAttrs: {
+      action: "http://jsonplaceholder.typicode.com/posts",
+      limit: 3,
+      multiple: true,
+    },
+  },
 ];
+
+const handleRemove = ({ file, fileList }: any) => {
+  console.log(file, fileList);
+};
+
+const handlePreview = (file: any) => {
+  console.log(file);
+};
+
+const handleExceed = ({ files, fileList }: any) => {
+  ElMessage.warning(
+    `The limit is 3, you selected ${files.length} files this time, add up to ${
+      files.length + fileList.length
+    } totally`
+  );
+};
+
+const beforeRemove = ({ file, fileList }: any) => {
+  return ElMessageBox.confirm(`Cancel the transfert of ${file.name} ?`).then(
+    () => true,
+    () => false
+  );
+};
+
+const handleSuccess = ({ response, file, fileList }: any) => {
+  console.log(response, file, fileList);
+};
+
+const handleError = ({ err, file, fileList }: any) => {
+  console.log(err, file, fileList);
+};
+
+const handleChange = ({ file, fileList }: any) => {
+  console.log(file, fileList);
+};
+const onSubmit = (scope: Scope) => {
+  if (scope.form) {
+    scope.form.validate((valid) => {
+      if (valid) {
+        ElMessage.success("上传成功");
+        console.log(scope.model);
+      } else {
+        ElMessage.error("表单填写有误请重新检查");
+      }
+    });
+  }
+};
+const resetForm = (scope: Scope) => {
+  if (scope.form) {
+    scope.form.resetFields();
+  }
+};
 </script>
 
 <style scoped></style>
