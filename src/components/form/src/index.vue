@@ -128,6 +128,24 @@ const formEmits = defineEmits([
   "on-exceed",
 ]);
 
+let resetFields = () => {
+  form.value?.resetFields();
+};
+
+let validateFields = () => {
+  return form.value?.validate;
+};
+
+let getFieldsValue = () => {
+  return model.value;
+};
+
+defineExpose({
+  resetFields,
+  validateFields,
+  getFieldsValue,
+});
+
 let model = ref<any>({});
 let rules = ref<any>({});
 const form = ref<FormInstance | null>(null);
@@ -137,10 +155,12 @@ let initForm = () => {
   if (options && options.length) {
     let m: any = {};
     let r: any = {};
+    let editorName = "";
     options.map((item) => {
       m[item.prop] = item.value;
       r[item.prop] = item.rules;
       if (item.type === "editor") {
+        editorName = item.prop;
         r[item.prop].push({
           validator: (rule: any, value: any, callback: any) => {
             if (editorRef.value) {
@@ -155,6 +175,12 @@ let initForm = () => {
     });
     model.value = cloneDeep(m);
     rules.value = cloneDeep(r);
+    watch(
+      () => model.value[editorName],
+      (val) => {
+        form.value?.validateField(editorName);
+      }
+    );
   }
 };
 

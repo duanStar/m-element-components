@@ -2,6 +2,9 @@
   .el-dialog__body {
     max-height: 400px;
     overflow-y: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 }
 .list-tabs__item {

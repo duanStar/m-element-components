@@ -69,6 +69,11 @@ let data = [
     index: "/form",
   },
   {
+    icon: "Setting",
+    name: "弹出框表单",
+    index: "/modalForm",
+  },
+  {
     icon: "Operation",
     name: "表格",
     index: "/tables",
