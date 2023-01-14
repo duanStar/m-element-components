@@ -1,0 +1,113 @@
+<template>
+  <div>
+    <m-table
+      :data="tableData"
+      :options="options"
+      elementLoadingText="加载中"
+      elementLoadingBackground="rgba(0,0,0,.8)"
+      :elementLoadingSpinner="svg"
+      elementLoadingSvgViewBox="-10 -10 50 50"
+    >
+      <template #date="{ scope }">
+        <div
+          style="display: flex; align-items: center; justify-content: center"
+        >
+          <el-icon><el-icon-timer /></el-icon>
+          <span style="margin-left: 10px">{{ scope.row.date }}</span>
+        </div>
+      </template>
+      <template #name="{ scope }">
+        <el-popover effect="light" trigger="hover" placement="top" width="auto">
+          <template #default>
+            <div>name: {{ scope.row.name }}</div>
+            <div>address: {{ scope.row.address }}</div>
+          </template>
+          <template #reference>
+            <el-tag>{{ scope.row.name }}</el-tag>
+          </template>
+        </el-popover>
+      </template>
+      <template #action="{ scope }">
+        <el-button type="primary" size="small" @click="handleEdit(scope)"
+          >编辑</el-button
+        >
+        <el-button size="small" type="danger" @click="handleDelete(scope)"
+          >删除</el-button
+        >
+      </template>
+    </m-table>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { TableOptions } from "@/components/table/src/types";
+
+const tableData = [
+  {
+    date: "2016-05-03",
+    name: "Tom",
+    address: "No. 189, Grove St, Los Angeles",
+  },
+  {
+    date: "2016-05-02",
+    name: "Tom",
+    address: "No. 189, Grove St, Los Angeles",
+  },
+  {
+    date: "2016-05-04",
+    name: "Tom",
+    address: "No. 189, Grove St, Los Angeles",
+  },
+  {
+    date: "2016-05-01",
+    name: "Tom",
+    address: "No. 189, Grove St, Los Angeles",
+  },
+];
+
+const options: TableOptions[] = [
+  {
+    label: "日期",
+    prop: "date",
+    align: "center",
+    slot: "date",
+  },
+  {
+    label: "姓名",
+    prop: "name",
+    align: "center",
+    slot: "name",
+  },
+  {
+    label: "地址",
+    prop: "address",
+    align: "center",
+  },
+  {
+    label: "操作",
+    action: true,
+    align: "center",
+  },
+];
+
+const svg = `
+        <path class="path" d="
+          M 30 15
+          L 28 17
+          M 25.61 25.61
+          A 15 15, 0, 0, 1, 15 30
+          A 15 15, 0, 1, 1, 27.99 7.5
+          L 15 15
+        " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
+      `;
+
+const handleDelete = (scope: any) => {
+  console.log(scope);
+};
+
+const handleEdit = (scope: any) => {
+  console.log(scope);
+};
+</script>
+
+<style scoped></style>

@@ -19,7 +19,7 @@ import { ref } from "vue";
 // @ts-ignore
 import NavHeader from "./navHeader/index.vue";
 // @ts-ignore
-import NavSide from "./NavSide/index.vue";
+import NavSide from "./navSide/index.vue";
 
 let isCollapse = ref(false);
 </script>

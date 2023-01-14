@@ -76,7 +76,7 @@ let data = [
   {
     icon: "Operation",
     name: "表格",
-    index: "/tables",
+    index: "/table",
   },
 ];
 </script>
