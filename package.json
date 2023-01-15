@@ -12,6 +12,7 @@
     "@element-plus/icons-vue": "^2.0.10",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
+    "axios": "^1.2.2",
     "element-plus": "^2.2.19",
     "lodash": "^4.17.21",
     "mockjs": "^1.1.0",
@@ -19,7 +20,9 @@
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/lodash": "^4.14.191",
+    "@types/mockjs": "^1.0.7",
     "@vitejs/plugin-vue": "^3.2.0",
     "@vitejs/plugin-vue-jsx": "^2.1.1",
     "@volar-plugins/vetur": "latest",

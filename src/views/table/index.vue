@@ -3,6 +3,8 @@
     <m-table
       :data="tableData"
       :options="options"
+      stripe
+      border
       isEditRow
       elementLoadingText="加载中"
       elementLoadingBackground="rgba(0,0,0,.8)"
@@ -10,8 +12,15 @@
       elementLoadingSvgViewBox="-10 -10 50 50"
       v-model:rowIndex="rowIndex"
       editRowIndex="edit"
+      pagination
+      :total="total"
+      :pageSize="pageSize"
+      :currentPage="currentPage"
+      paginationAlign="right"
       @confirm="handleCheck"
       @cancel="handleClose"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     >
       <template #date="{ scope }">
         <el-icon><el-icon-timer /></el-icon>
@@ -58,34 +67,8 @@
 
 <script setup lang="ts">
 import { TableOptions } from "@/components/table/src/types";
-import { ref } from "vue";
-
-const tableData = [
-  {
-    id: 1,
-    date: "2016-05-03",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    id: 2,
-    date: "2016-05-02",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    id: 3,
-    date: "2016-05-04",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-  {
-    id: 4,
-    date: "2016-05-01",
-    name: "Tom",
-    address: "No. 189, Grove St, Los Angeles",
-  },
-];
+import { onMounted, ref } from "vue";
+import axios from "axios";
 
 const options: TableOptions[] = [
   {
@@ -126,7 +109,46 @@ const svg = `
         " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
       `;
 
+interface TableData {
+  date: string;
+  name: string;
+  address: string;
+}
+
 let rowIndex = ref<string>("");
+let currentPage = ref<number>(1);
+let pageSize = ref<number>(10);
+let total = ref<number>(0);
+const tableData = ref<TableData[]>([]);
+
+const getData = () => {
+  axios
+    .post("/api/list", {
+      current: currentPage.value,
+      pageSize: pageSize.value,
+    })
+    .then((res: any) => {
+      const { rows, total: t } = res.data.data;
+      console.log(res.data.data);
+      tableData.value = rows;
+      total.value = t;
+    });
+};
+
+const handleSizeChange = (val: number) => {
+  pageSize.value = val;
+  currentPage.value = 1;
+  getData();
+};
+
+const handleCurrentChange = (val: number) => {
+  currentPage.value = val;
+  getData();
+};
+
+onMounted(() => {
+  getData();
+});
 
 const handleDelete = (scope: any) => {
   console.log(scope);

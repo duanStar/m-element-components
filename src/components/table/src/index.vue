@@ -111,6 +111,24 @@
       </template>
     </el-table-column>
   </el-table>
+  <div
+    v-if="pagination"
+    class="pagination"
+    :style="{
+      justifyContent: paginationJustifyContent,
+    }"
+  >
+    <el-pagination
+      :page-size="pageSize"
+      :page-sizes="pageSizes"
+      :current-page="currentPage"
+      background
+      :layout="layout"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -159,9 +177,42 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  currentPage: {
+    type: Number,
+    default: 1,
+  },
+  pageSizes: {
+    type: Array as PropType<number[]>,
+    default: () => [10, 20, 30, 40],
+  },
+  pageSize: {
+    type: Number,
+    default: 10,
+  },
+  total: {
+    type: Number,
+  },
+  pagination: {
+    type: Boolean,
+    default: false,
+  },
+  layout: {
+    type: String,
+    default: "total, sizes, prev, pager, next, jumper",
+  },
+  paginationAlign: {
+    type: String as PropType<"left" | "right" | "center">,
+    default: "left",
+  },
 });
 
-let tableEmits = defineEmits(["confirm", "cancel", "update:rowIndex"]);
+let tableEmits = defineEmits([
+  "confirm",
+  "cancel",
+  "update:rowIndex",
+  "size-change",
+  "current-change",
+]);
 
 let tableOptions = computed(() => {
   return props.options.filter((item) => !item.action);
@@ -206,6 +257,14 @@ onMounted(() => {
   });
 });
 
+const paginationJustifyContent = computed(() => {
+  return props.paginationAlign === "left"
+    ? "flex-start"
+    : props.paginationAlign === "right"
+    ? "flex-end"
+    : "center";
+});
+
 const clickEdit = (scope: any) => {
   currentEdit.value = scope.$index + scope.column.id;
 };
@@ -240,6 +299,14 @@ const rowClick = (row: any, column: any) => {
     }
   }
 };
+
+const handleSizeChange = (val: number) => {
+  tableEmits("size-change", val);
+};
+
+const handleCurrentChange = (val: number) => {
+  tableEmits("current-change", val);
+};
 </script>
 
 <style scoped lang="scss">
@@ -265,5 +332,10 @@ const rowClick = (row: any, column: any) => {
   .close {
     color: green;
   }
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
 }
 </style>

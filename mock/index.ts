@@ -26,7 +26,7 @@ Mock.mock("/api/list", "post", (params: any) => {
   let len = total / size;
   let totalPages =
     len - parseInt(String(len)) > 0 ? parseInt(String(len)) + 1 : len;
-  let newDataList = dataList.slice(index * size, (index + 1) * size);
+  let newDataList = dataList.slice((index - 1) * size, index * size);
   return {
     code: "200",
     message: "获取成功",
