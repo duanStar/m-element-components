@@ -3,10 +3,13 @@
     <m-table
       :data="tableData"
       :options="options"
+      isEditRow
       elementLoadingText="加载中"
       elementLoadingBackground="rgba(0,0,0,.8)"
       :elementLoadingSpinner="svg"
       elementLoadingSvgViewBox="-10 -10 50 50"
+      v-model:rowIndex="rowIndex"
+      editRowIndex="edit"
       @confirm="handleCheck"
       @cancel="handleClose"
     >
@@ -33,6 +36,14 @@
           >删除</el-button
         >
       </template>
+      <template #edit="{ scope }">
+        <el-button type="primary" size="small" @click="confirm(scope)"
+          >确认</el-button
+        >
+        <el-button size="small" type="danger" @click="cancel(scope)"
+          >取消</el-button
+        >
+      </template>
       <template #editCell="{ scope }">
         <div style="display: flex; margin-left: 6px">
           <el-button size="small" type="primary" @click="handleConfirm(scope)"
@@ -47,24 +58,29 @@
 
 <script setup lang="ts">
 import { TableOptions } from "@/components/table/src/types";
+import { ref } from "vue";
 
 const tableData = [
   {
+    id: 1,
     date: "2016-05-03",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
   {
+    id: 2,
     date: "2016-05-02",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
   {
+    id: 3,
     date: "2016-05-04",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
   },
   {
+    id: 4,
     date: "2016-05-01",
     name: "Tom",
     address: "No. 189, Grove St, Los Angeles",
@@ -95,6 +111,7 @@ const options: TableOptions[] = [
     label: "操作",
     action: true,
     align: "center",
+    prop: "action",
   },
 ];
 
@@ -109,12 +126,15 @@ const svg = `
         " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
       `;
 
+let rowIndex = ref<string>("");
+
 const handleDelete = (scope: any) => {
   console.log(scope);
 };
 
 const handleEdit = (scope: any) => {
   console.log(scope);
+  rowIndex.value = "edit";
 };
 
 const handleCheck = (scope: any) => {
@@ -126,6 +146,12 @@ const handleClose = (scope: any) => {
 };
 
 const handleConfirm = (scope: any) => {
+  console.log(scope);
+};
+const confirm = (scope: any) => {
+  console.log(scope);
+};
+const cancel = (scope: any) => {
   console.log(scope);
 };
 </script>

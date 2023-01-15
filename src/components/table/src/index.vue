@@ -1,13 +1,14 @@
 <template>
   <el-table
     v-loading="isLoading"
-    :data="props.data"
+    :data="tableData"
     v-bind="$attrs"
     :element-loading-text="elementLoadingText"
     :element-loading-spinner="elementLoadingSpinner"
     :element-loading-svg="elementLoadingSvg"
     :element-loading-background="elementLoadingBackground"
     :element-loading-svg-view-box="elementLoadingSvgViewBox"
+    @row-click="rowClick"
   >
     <template v-for="item in tableOptions" :key="item.label">
       <el-table-column
@@ -18,33 +19,36 @@
         :width="item.width"
       >
         <template #default="scope">
-          <template v-if="scope.$index + scope.column.id === currentEdit">
-            <div
-              style="display: flex; align-items: center"
-              @click="clickEditCell($event)"
-            >
-              <!-- eslint-disable-next-line -->
-              <el-input size="small" v-model="scope.row[item.prop!]" />
-              <slot
-                v-if="$slots.editCell"
-                name="editCell"
-                :scope="scope"
-              ></slot>
-              <div v-else class="icons">
-                <el-icon-check class="check" @click="clickSave(scope)" />
-                <el-icon-close class="close" @click="clickCancel(scope)" />
-              </div>
-            </div>
+          <template v-if="scope.row.rowEdit">
+            <el-input size="small" v-model="scope.row[item.prop]" />
           </template>
           <template v-else>
-            <!-- eslint-disable-next-line -->
-            <span>{{ scope.row[item.prop!] }}</span>
-            <component
-              v-if="item.editable"
-              :is="`el-icon${toLine(editIcon)}`"
-              class="edit"
-              @click="clickEdit(scope)"
-            />
+            <template v-if="scope.$index + scope.column.id === currentEdit">
+              <div
+                style="display: flex; align-items: center"
+                @click.stop="clickEditCell($event)"
+              >
+                <el-input size="small" v-model="scope.row[item.prop]" />
+                <slot
+                  v-if="$slots.editCell"
+                  name="editCell"
+                  :scope="scope"
+                ></slot>
+                <div v-else class="icons">
+                  <el-icon-check class="check" @click="clickSave(scope)" />
+                  <el-icon-close class="close" @click="clickCancel(scope)" />
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <span>{{ scope.row[item.prop] }}</span>
+              <component
+                v-if="item.editable"
+                :is="`el-icon${toLine(editIcon)}`"
+                class="edit"
+                @click.stop="clickEdit(scope)"
+              />
+            </template>
           </template>
         </template>
       </el-table-column>
@@ -56,35 +60,41 @@
         :width="item.width"
       >
         <template #default="scope">
-          <template v-if="scope.$index + scope.column.id === currentEdit">
-            <div
-              style="display: flex; align-items: center"
-              @click="clickEditCell($event)"
-            >
-              <!-- eslint-disable-next-line -->
-              <el-input size="small" v-model="scope.row[item.prop!]" />
-              <slot
-                v-if="$slots.editCell"
-                name="editCell"
-                :scope="scope"
-              ></slot>
-              <div v-else class="icons">
-                <el-icon-check class="check" @click="clickSave(scope)" />
-                <el-icon-close class="close" @click="clickCancel(scope)" />
-              </div>
-            </div>
+          <template v-if="scope.row.rowEdit">
+            <el-input size="small" v-model="scope.row[item.prop]" />
           </template>
           <template v-else>
-            <slot :name="item.slot" :scope="scope">
-              <!-- eslint-disable-next-line -->
-              <span>{{ scope.row[item.prop!] }}</span>
-            </slot>
-            <component
-              v-if="item.editable"
-              :is="`el-icon${toLine(editIcon)}`"
-              class="edit"
-              @click="clickEdit(scope)"
-            />
+            <template v-if="scope.$index + scope.column.id === currentEdit">
+              <div
+                style="display: flex; align-items: center"
+                @click.stop="clickEditCell($event)"
+              >
+                <el-input size="small" v-model="scope.row[item.prop]" />
+                <slot
+                  v-if="$slots.editCell"
+                  name="editCell"
+                  :scope="scope"
+                ></slot>
+                <div v-else class="icons">
+                  <el-icon-check class="check" @click.stop="clickSave(scope)" />
+                  <el-icon-close
+                    class="close"
+                    @click.stop="clickCancel(scope)"
+                  />
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <slot :name="item.slot" :scope="scope">
+                <span>{{ scope.row[item.prop] }}</span>
+              </slot>
+              <component
+                v-if="item.editable"
+                :is="`el-icon${toLine(editIcon)}`"
+                class="edit"
+                @click.stop="clickEdit(scope)"
+              />
+            </template>
           </template>
         </template>
       </el-table-column>
@@ -96,7 +106,8 @@
       :width="actionOptions.width"
     >
       <template #default="scope">
-        <slot name="action" :scope="scope"></slot>
+        <slot v-if="scope.row.rowEdit" name="edit" :scope="scope"></slot>
+        <slot v-else name="action" :scope="scope"></slot>
       </template>
     </el-table-column>
   </el-table>
@@ -104,7 +115,8 @@
 
 <script setup lang="ts">
 import { toLine } from "@/utils";
-import { computed, PropType, ref } from "vue";
+import { cloneDeep } from "lodash";
+import { computed, onMounted, PropType, ref, watch } from "vue";
 import { TableOptions } from "./types";
 
 const props = defineProps({
@@ -135,9 +147,21 @@ const props = defineProps({
     type: String,
     default: "Edit",
   },
+  isEditRow: {
+    type: Boolean,
+    default: false,
+  },
+  editRowIndex: {
+    type: String,
+    default: "",
+  },
+  rowIndex: {
+    type: String,
+    default: "",
+  },
 });
 
-let tableEmits = defineEmits(["confirm", "cancel"]);
+let tableEmits = defineEmits(["confirm", "cancel", "update:rowIndex"]);
 
 let tableOptions = computed(() => {
   return props.options.filter((item) => !item.action);
@@ -153,6 +177,34 @@ let isLoading = computed(() => {
 });
 
 let currentEdit = ref<string>("");
+let tableData = ref<any[]>(cloneDeep(props.data));
+let editIndex = ref<string>(props.rowIndex);
+
+watch(
+  () => props.data,
+  (val) => {
+    tableData.value = cloneDeep(val);
+    tableData.value.map((item) => {
+      item.rowEdit = false;
+    });
+  },
+  {
+    deep: true,
+  }
+);
+
+watch(
+  () => props.rowIndex,
+  (val) => {
+    editIndex.value = val;
+  }
+);
+
+onMounted(() => {
+  tableData.value.map((item) => {
+    item.rowEdit = false;
+  });
+});
 
 const clickEdit = (scope: any) => {
   currentEdit.value = scope.$index + scope.column.id;
@@ -171,6 +223,22 @@ const clickCancel = (scope: any) => {
 const clickEditCell = (e: MouseEvent) => {
   if ((e.target as Element).matches("input")) return;
   currentEdit.value = "";
+};
+
+const rowClick = (row: any, column: any) => {
+  if (actionOptions.value?.label === column?.label) {
+    if (props.isEditRow && props.editRowIndex === editIndex.value) {
+      row.rowEdit = !row.rowEdit;
+      tableData.value.forEach((item) => {
+        if (item !== row) {
+          item.rowEdit = false;
+        }
+      });
+      if (!row.rowEdit) {
+        tableEmits("update:rowIndex", "");
+      }
+    }
+  }
 };
 </script>
 
