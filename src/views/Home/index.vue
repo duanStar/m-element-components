@@ -1,5 +1,12 @@
 <template>
-  <div><el-button type="primary">Primary</el-button> <el-icon-edit /></div>
+  <div>
+    <el-result
+      icon="success"
+      title="Vite + ElementPlus封装组件"
+      sub-title="Vue3"
+    >
+    </el-result>
+  </div>
 </template>
 
 <script setup lang="ts"></script>
