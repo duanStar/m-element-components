@@ -7,14 +7,12 @@
       elementLoadingBackground="rgba(0,0,0,.8)"
       :elementLoadingSpinner="svg"
       elementLoadingSvgViewBox="-10 -10 50 50"
+      @confirm="handleCheck"
+      @cancel="handleClose"
     >
       <template #date="{ scope }">
-        <div
-          style="display: flex; align-items: center; justify-content: center"
-        >
-          <el-icon><el-icon-timer /></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.date }}</span>
-        </div>
+        <el-icon><el-icon-timer /></el-icon>
+        <span style="margin-left: 10px">{{ scope.row.date }}</span>
       </template>
       <template #name="{ scope }">
         <el-popover effect="light" trigger="hover" placement="top" width="auto">
@@ -34,6 +32,14 @@
         <el-button size="small" type="danger" @click="handleDelete(scope)"
           >删除</el-button
         >
+      </template>
+      <template #editCell="{ scope }">
+        <div style="display: flex; margin-left: 6px">
+          <el-button size="small" type="primary" @click="handleConfirm(scope)"
+            >确认</el-button
+          >
+          <el-button size="small">取消</el-button>
+        </div>
       </template>
     </m-table>
   </div>
@@ -71,6 +77,7 @@ const options: TableOptions[] = [
     prop: "date",
     align: "center",
     slot: "date",
+    editable: true,
   },
   {
     label: "姓名",
@@ -82,6 +89,7 @@ const options: TableOptions[] = [
     label: "地址",
     prop: "address",
     align: "center",
+    editable: true,
   },
   {
     label: "操作",
@@ -106,6 +114,18 @@ const handleDelete = (scope: any) => {
 };
 
 const handleEdit = (scope: any) => {
+  console.log(scope);
+};
+
+const handleCheck = (scope: any) => {
+  console.log(scope);
+};
+
+const handleClose = (scope: any) => {
+  console.log(scope);
+};
+
+const handleConfirm = (scope: any) => {
   console.log(scope);
 };
 </script>
