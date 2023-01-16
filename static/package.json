@@ -1,0 +1,26 @@
+{
+  "name": "m-elements-components",
+  "version": "1.0.0",
+  "main": "index.umd.js",
+  "module": "index.es.js",
+  "types": "index.d.ts",
+  "author": {
+    "name": "duanhongfei",
+    "email": "1715106673@qq.com"
+  },
+  "keywords": [
+    "element-plus",
+    "components",
+    "vue3",
+    "组件封装",
+    "二次封装",
+    "ts"
+  ],
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.0.10",
+    "element-plus": "^2.2.19"
+  },
+  "peerDependencies": {
+    "vue": ">=3.1.0"
+  }
+}

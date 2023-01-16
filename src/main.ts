@@ -6,6 +6,8 @@ import router from "@/router";
 import * as Icons from "@element-plus/icons-vue";
 import { toLine } from "./utils";
 import mUI from "@/components";
+// import mUI from "../lib/index.es";
+import "../lib/style.css";
 import "../mock";
 
 const app = createApp(App);
